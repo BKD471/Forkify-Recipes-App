@@ -5,8 +5,13 @@
 import * as model from './model.js';
 import recipeView from './views/recipeViews.js';
 import searchView from './views/searchViews.js';
-
+import resultsView from './views/resultsView.js';
 ///////////////////////////////////////
+
+//enabling hot module reloading
+if (module.hot) {
+  module.hot.accept();
+}
 
 // for loading the recipe
 const controlRecipes = async () => {
@@ -26,17 +31,18 @@ const controlRecipes = async () => {
   }
 };
 
+// for fetching the query from searchbar
 const controlSearchResults = async () => {
   try {
     //Get serach query
     const query = searchView.getQuery();
     if (!query) return;
-
+    resultsView.renderSpinner();
     //2 load the results
     await model.loadSearchResults(query); // doesnot return , mutates the state only
 
     //3 render results
-    console.log(model.state.search.results);
+    resultsView.render(model.state.search.results);
   } catch (error) {
     console.log(error);
   }
