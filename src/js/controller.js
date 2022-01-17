@@ -42,7 +42,8 @@ const controlSearchResults = async () => {
     await model.loadSearchResults(query); // doesnot return , mutates the state only
 
     //3 render results
-    resultsView.render(model.state.search.results);
+    //resultsView.render(model.state.search.results);
+    resultsView.render(model.getSearchResultsPage(1));
   } catch (error) {
     console.log(error);
   }

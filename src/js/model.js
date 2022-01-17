@@ -4,7 +4,7 @@
 import 'core-js/stable'; // for polyfilling everything general
 import 'regenerator-runtime/runtime'; // for polyfilling async await
 import { async } from 'regenerator-runtime';
-import { API_URL } from './config.js';
+import { API_URL, RES_PER_PAGE } from './config.js';
 import { getJSON } from './helpers.js';
 
 export const state = {
@@ -12,6 +12,8 @@ export const state = {
   search: {
     query: '',
     results: [],
+    resultsPerPage: RES_PER_PAGE,
+    page: 1,
   },
   bookmarks: {},
 };
@@ -59,4 +61,11 @@ export const loadSearchResults = async query => {
   } catch (error) {
     throw error;
   }
+};
+
+export const getSearchResultsPage = (page = state.search.page) => {
+  state.search.page = page;
+  const start = (page - 1) * state.search.resultsPerPage;
+  const end = page * state.search.resultsPerPage;
+  return state.search.results.slice(start, end);
 };
