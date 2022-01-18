@@ -12,9 +12,12 @@ class ResultsView extends View {
 
   _generateMarkupPreview(res) {
     //prettier-ignore
+    const id=window.location.hash.slice(1);
 
     return `<li class="preview">
-         <a class="preview__link " href="#${res.id}">
+         <a class="preview__link ${
+           id === res.id ? 'preview__link--active' : ''
+         }" href="#${res.id}">
             <figure class="preview__fig">
                 <img src="${res.image}" alt="${res.title}"  crossorigin/>
             </figure>

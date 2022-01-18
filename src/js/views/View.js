@@ -12,6 +12,30 @@ export default class View {
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
   }
 
+  update(data) {
+    this._data = data;
+    const newMarkup = this._generateMarkup();
+    const newDom = document.createRange().createContextualFragment(newMarkup); // this method will convert the string into real dom node
+    // this behaves like virtual dom  that is not there on the page and we can compare it the dom on page
+    const newElements = Array.from(newDom.querySelectorAll('*'));
+    const currElements = Array.from(this._parentElement.querySelectorAll('*'));
+    newElements.forEach((newEl, i) => {
+      const currEl = currElements[i];
+      //Updating the changed text
+      //prettier-ignore
+      if (!newEl.isEqualNode(currEl) && newEl.firstChild?.nodeValue.trim() !== '') {
+        currEl.textContent=newEl.textContent;
+
+      }
+      //updating the changed attribute
+      if (!newEl.isEqualNode(currEl)) {
+        Array.from(newEl.attributes).forEach(attr =>
+          currEl.setAttribute(attr.name, attr.value)
+        );
+      }
+    });
+  }
+
   renderSpinner = () => {
     const markup = `
         <div class="spinner">

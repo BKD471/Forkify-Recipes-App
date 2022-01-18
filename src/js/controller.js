@@ -21,13 +21,14 @@ const controlRecipes = async () => {
     if (!id) return;
     recipeView.renderSpinner();
 
+    // Update results view to mark selected search result
+    resultsView.update(model.getSearchResultsPage());
     // 1 Loading Recipe
     await model.loadRecipe(id); // this is async func so lets wait, it wont return but it will mutate the state object in model
 
     //2 Rendering Recipe
     recipeView.render(model.state.recipe);
   } catch (error) {
-    console.log(error);
     recipeView.renderError();
   }
 };
@@ -61,6 +62,21 @@ const controlPagination = goToPage => {
   paginationView.render(model.state.search);
 };
 
+const controlServings = changedValve => {
+  //Update the recipe servings in state
+  let updatedServings = changedValve;
+  // valve === 1
+  //   ? (updatedServings = model.state.recipe.servings + 1)
+  //   : (updatedServings = model.state.recipe.servings - 1);
+  // if (updatedServings <= 0) return;
+
+  model.updateServings(updatedServings);
+
+  //Update the recipe view
+  // recipeView.render(model.state.recipe);
+  recipeView.update(model.state.recipe); // updates only text and attributes in the dom without again rendering entire view
+};
+
 // window.addEventListener('hashchange',  controlRecipes);
 // window.addEventListener('load', controlRecipes);
 
@@ -69,6 +85,7 @@ const init = () => {
   recipeView.addHandlerRender(controlRecipes);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
+  recipeView.addHandlerUpdateServings(controlServings);
 };
 init();
 
