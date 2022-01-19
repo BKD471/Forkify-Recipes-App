@@ -6,6 +6,7 @@ import * as model from './model.js';
 import recipeView from './views/recipeViews.js';
 import searchView from './views/searchViews.js';
 import resultsView from './views/resultsView.js';
+import bookmarksView from './views/bookmarksView.js';
 import paginationView from './views/paginationView.js';
 ///////////////////////////////////////
 
@@ -23,6 +24,7 @@ const controlRecipes = async () => {
 
     // Update results view to mark selected search result
     resultsView.update(model.getSearchResultsPage());
+    bookmarksView.update(model.state.bookmarks);
     // 1 Loading Recipe
     await model.loadRecipe(id); // this is async func so lets wait, it wont return but it will mutate the state object in model
 
@@ -77,8 +79,16 @@ const controlServings = changedValve => {
   recipeView.update(model.state.recipe); // updates only text and attributes in the dom without again rendering entire view
 };
 
-// window.addEventListener('hashchange',  controlRecipes);
-// window.addEventListener('load', controlRecipes);
+const controlAddBookmark = () => {
+  //! add or remove bookmark
+  !model.state.recipe.bookmarked
+    ? model.addBookMark(model.state.recipe)
+    : model.deleteBookmark(model.state.recipe.id);
+  //2 Update Recipe views
+  recipeView.update(model.state.recipe);
+  //3 render bookmarks
+  bookmarksView.render(model.state.bookmarks);
+};
 
 // This is the logic part of publisher subscriber
 const init = () => {
@@ -86,6 +96,7 @@ const init = () => {
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
   recipeView.addHandlerUpdateServings(controlServings);
+  recipeView.addHandlerAddBookmark(controlAddBookmark);
 };
 init();
 
