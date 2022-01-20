@@ -8,6 +8,7 @@ import searchView from './views/searchViews.js';
 import resultsView from './views/resultsView.js';
 import bookmarksView from './views/bookmarksView.js';
 import paginationView from './views/paginationView.js';
+import addRecipeView from './views/addRecipeView.js';
 ///////////////////////////////////////
 
 //enabling hot module reloading
@@ -24,6 +25,7 @@ const controlRecipes = async () => {
 
     // Update results view to mark selected search result
     resultsView.update(model.getSearchResultsPage());
+    //0 update bookmarks view
     bookmarksView.update(model.state.bookmarks);
     // 1 Loading Recipe
     await model.loadRecipe(id); // this is async func so lets wait, it wont return but it will mutate the state object in model
@@ -90,13 +92,25 @@ const controlAddBookmark = () => {
   bookmarksView.render(model.state.bookmarks);
 };
 
+const controlBookmarks = () => {
+  bookmarksView.render(model.state.bookmarks);
+};
+
+const controlAddRecipe = newRecipe => {
+  console.log(newRecipe);
+
+  //Upload new Recipe data
+};
+
 // This is the logic part of publisher subscriber
 const init = () => {
+  bookmarksView.addHandlerRender(controlBookmarks);
   recipeView.addHandlerRender(controlRecipes);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
   recipeView.addHandlerUpdateServings(controlServings);
   recipeView.addHandlerAddBookmark(controlAddBookmark);
+  addRecipeView.addHandlerUpload(controlAddRecipe);
 };
 init();
 
