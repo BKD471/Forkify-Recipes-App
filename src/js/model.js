@@ -3,9 +3,7 @@
 // add polyfills for es6 features
 import 'core-js/stable'; // for polyfilling everything general
 import 'regenerator-runtime/runtime'; // for polyfilling async await
-import { async } from 'regenerator-runtime';
 import { API_URL, RES_PER_PAGE, KEY } from './config.js';
-import { getJSON, sendJSON } from './helpers.js';
 import { AJAX } from './helpers.js';
 
 export const state = {
@@ -48,8 +46,6 @@ export const loadRecipe = async id => {
       ? true
       : false;
   } catch (error) {
-    console.error(`${error} `);
-
     throw error; // throw so that it propagates to controller
   }
 };
@@ -88,7 +84,6 @@ export const updateServings = newServings => {
     ing.quantity = (ing.quantity * newServings) / state.recipe.servings;
     // new qty=(old qty * newServings)/oldServngs
   });
-
   state.recipe.servings = newServings;
 };
 
@@ -101,7 +96,6 @@ export const addBookMark = recipe => {
   state.bookmarks.push(recipe);
 
   //Mark current recipe as bookmarked
-  //if (recipe.id === state.recipe.id)
   state.recipe.bookmarked = true;
 
   //add bookmarks to storage
@@ -114,7 +108,6 @@ export const deleteBookmark = id => {
   state.bookmarks.splice(index, 1);
 
   //Mark current recipe as not bookmarked
-  //if (id === state.recipe.id)
   state.recipe.bookmarked = false;
 
   //remove bookmarks from storage
@@ -138,7 +131,6 @@ export const uploadRecipe = async newRecipe => {
     const ingredients = Object.entries(newRecipe)
       .filter(entry => entry[0].startsWith('ingredient') && entry[1] !== '')
       .map(ing => {
-        // const ingArr = ing[1].replaceAll(' ', '').split(',');
         const ingArr = ing[1].split(',').map(el => el.trim());
         const [quantity, unit, description] = ingArr;
         if (ingArr.length !== 3)

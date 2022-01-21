@@ -10,7 +10,6 @@ import bookmarksView from './views/bookmarksView.js';
 import paginationView from './views/paginationView.js';
 import addRecipeView from './views/addRecipeView.js';
 import addForm from './views/addForm.js';
-import Rem from './views/removeView.js';
 import { MODAL_CLOSE_SEC } from './config.js';
 ///////////////////////////////////////
 
@@ -81,7 +80,6 @@ const controlServings = changedValve => {
   model.updateServings(updatedServings);
 
   //Update the recipe view
-  // recipeView.render(model.state.recipe);
   recipeView.update(model.state.recipe); // updates only text and attributes in the dom without again rendering entire view
 };
 

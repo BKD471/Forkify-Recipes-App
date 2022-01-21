@@ -1,6 +1,4 @@
-import icons from 'url:../../img/icons.svg'; //for parcel 2
 import View from './View.js';
-import { Fraction } from 'fractional';
 
 class AddRecipeView extends View {
   _parentElement = document.querySelector('.upload');

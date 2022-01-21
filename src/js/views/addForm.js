@@ -2,7 +2,6 @@ import icons from 'url:../../img/icons.svg'; //for parcel 2
 import View from './View.js';
 class AddForm {
   _frmEl = document.querySelector('.upload');
-  _rl = document.querySelector('.message');
   formAdder() {
     const markup = `<div class="upload__column">
   <h3 class="upload__heading">Recipe data</h3>
@@ -17,7 +16,7 @@ class AddForm {
   <label>Prep time</label>
   <input value="23" required name="cookingTime" type="number" />
   <label>Servings</label>
-  <input value="23" required name="servings" type="number" />
+  <input value="10" required name="servings" type="number" />
 </div>
 
 <div class="upload__column">
@@ -73,11 +72,7 @@ class AddForm {
     this._frmEl.insertAdjacentHTML('afterbegin', markup);
 
     if (this._frmEl) {
-      // console.log(this._rl);
-      console.log(this._frmEl.childNodes);
       this._frmEl.childNodes[6].remove();
-      //this._rl.remove();
-      // this._frmEl.removeChild(this._frmEl.lastChild);
     }
   }
 }
