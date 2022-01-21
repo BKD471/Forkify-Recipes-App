@@ -9,12 +9,15 @@ import resultsView from './views/resultsView.js';
 import bookmarksView from './views/bookmarksView.js';
 import paginationView from './views/paginationView.js';
 import addRecipeView from './views/addRecipeView.js';
+import addForm from './views/addForm.js';
+import Rem from './views/removeView.js';
+import { MODAL_CLOSE_SEC } from './config.js';
 ///////////////////////////////////////
 
 //enabling hot module reloading
-if (module.hot) {
-  module.hot.accept();
-}
+// if (module.hot) {
+//   module.hot.accept();
+// }
 
 // for loading the recipe
 const controlRecipes = async () => {
@@ -40,10 +43,11 @@ const controlRecipes = async () => {
 // for fetching the query from searchbar
 const controlSearchResults = async () => {
   try {
+    resultsView.renderSpinner();
     //Get serach query
     const query = searchView.getQuery();
     if (!query) return;
-    resultsView.renderSpinner();
+
     //2 load the results
     await model.loadSearchResults(query); // doesnot return , mutates the state only
 
@@ -86,6 +90,7 @@ const controlAddBookmark = () => {
   !model.state.recipe.bookmarked
     ? model.addBookMark(model.state.recipe)
     : model.deleteBookmark(model.state.recipe.id);
+
   //2 Update Recipe views
   recipeView.update(model.state.recipe);
   //3 render bookmarks
@@ -96,10 +101,33 @@ const controlBookmarks = () => {
   bookmarksView.render(model.state.bookmarks);
 };
 
-const controlAddRecipe = newRecipe => {
-  console.log(newRecipe);
+const controlAddRecipe = async newRecipe => {
+  try {
+    //show loading spinner
+    addRecipeView.renderSpinner();
 
-  //Upload new Recipe data
+    //Upload new Recipe data
+    await model.uploadRecipe(newRecipe);
+
+    //Render recipe
+    recipeView.render(model.state.recipe);
+
+    //display success message for recipe upload
+    addRecipeView.renderMessage();
+    // Render bookmark view
+    bookmarksView.render(model.state.bookmarks);
+
+    //close modal
+    setTimeout(() => {
+      addRecipeView.toggleWindow();
+    }, MODAL_CLOSE_SEC * 1000);
+
+    setTimeout(() => {
+      addForm.formAdder();
+    }, 3000);
+  } catch (error) {
+    addRecipeView.renderError(error.message);
+  }
 };
 
 // This is the logic part of publisher subscriber

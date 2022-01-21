@@ -8,6 +8,7 @@ class AddRecipeView extends View {
   _overlay = document.querySelector('.overlay');
   _btnOpen = document.querySelector('.nav__btn--add-recipe');
   _btnClose = document.querySelector('.btn--close-modal');
+  _message = 'Recipe was successfully uploaded 👌👌';
 
   constructor() {
     super();
@@ -37,7 +38,10 @@ class AddRecipeView extends View {
       handler(data);
     });
   }
-  _generateMarkup() {}
+
+  clear() {
+    this._parentElement.innerHTML = '';
+  }
 }
 
 export default new AddRecipeView();

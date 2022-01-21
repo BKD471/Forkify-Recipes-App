@@ -4,8 +4,8 @@
 import 'core-js/stable'; // for polyfilling everything general
 import 'regenerator-runtime/runtime'; // for polyfilling async await
 import { async } from 'regenerator-runtime';
-import { API_URL, RES_PER_PAGE } from './config.js';
-import { getJSON } from './helpers.js';
+import { API_URL, RES_PER_PAGE, KEY } from './config.js';
+import { getJSON, sendJSON } from './helpers.js';
 
 export const state = {
   recipe: {},
@@ -18,24 +18,28 @@ export const state = {
   bookmarks: [],
 };
 
+const createRecipeObject = data => {
+  const { recipe } = data.data;
+  // formatting the recipe object of state in model
+  return {
+    id: recipe.id,
+    title: recipe.title,
+    publisher: recipe.publisher,
+    sourceUrl: recipe.source_url,
+    image: recipe.image_url,
+    servings: recipe.servings,
+    cookingTime: recipe.cooking_time,
+    ingredients: recipe.ingredients,
+    ...(recipe.key && { key: recipe.key }), //conditionally add properties to object
+  };
+};
+
 //This function will just change the state obj which will contain recipe
 // from which controller will grab and take out recipe from here and render it on view
 export const loadRecipe = async id => {
   try {
     const data = await getJSON(`${API_URL}/${id}`);
-
-    const { recipe } = data.data;
-    // formatting the recipe object of state in model
-    state.recipe = {
-      id: recipe.id,
-      title: recipe.title,
-      publisher: recipe.publisher,
-      sourceUrl: recipe.source_url,
-      image: recipe.image_url,
-      servings: recipe.servings,
-      cookingTime: recipe.cooking_time,
-      ingredients: recipe.ingredients,
-    };
+    state.recipe = createRecipeObject(data);
 
     state.recipe.bookmarked = state.bookmarks.some(
       bookmark => bookmark.id === id
@@ -126,3 +130,34 @@ const clearBookmarks = () => {
 };
 
 //clearBookmarks();
+
+export const uploadRecipe = async newRecipe => {
+  try {
+    const ingredients = Object.entries(newRecipe)
+      .filter(entry => entry[0].startsWith('ingredient') && entry[1] !== '')
+      .map(ing => {
+        const ingArr = ing[1].replaceAll(' ', '').split(',');
+        const [quantity, unit, description] = ingArr;
+        if (ingArr.length !== 3)
+          throw new Error(
+            '⚠️‼️ Wrong ingredient Format!. Please use the correct input format'
+          );
+        return { quantity: quantity ? +quantity : null, unit, description };
+      });
+
+    const recipe = {
+      title: newRecipe.title,
+      source_url: newRecipe.sourceUrl,
+      image_url: newRecipe.image,
+      servings: +newRecipe.servings,
+      cooking_time: +newRecipe.cookingTime,
+      publisher: newRecipe.publisher,
+      ingredients,
+    };
+    const data = await sendJSON(`${API_URL}?key=${KEY}`, recipe);
+    state.recipe = createRecipeObject(data);
+    addBookMark(state.recipe);
+  } catch (error) {
+    throw error;
+  }
+};
