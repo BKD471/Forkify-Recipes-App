@@ -74,7 +74,7 @@ class AddForm {
 
     if (this._frmEl) {
       // console.log(this._rl);
-
+      console.log(this._frmEl.childNodes);
       this._frmEl.childNodes[6].remove();
       //this._rl.remove();
       // this._frmEl.removeChild(this._frmEl.lastChild);

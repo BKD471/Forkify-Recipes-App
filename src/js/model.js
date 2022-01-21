@@ -6,6 +6,7 @@ import 'regenerator-runtime/runtime'; // for polyfilling async await
 import { async } from 'regenerator-runtime';
 import { API_URL, RES_PER_PAGE, KEY } from './config.js';
 import { getJSON, sendJSON } from './helpers.js';
+import { AJAX } from './helpers.js';
 
 export const state = {
   recipe: {},
@@ -38,7 +39,7 @@ const createRecipeObject = data => {
 // from which controller will grab and take out recipe from here and render it on view
 export const loadRecipe = async id => {
   try {
-    const data = await getJSON(`${API_URL}/${id}`);
+    const data = await AJAX(`${API_URL}/${id}?key=${KEY}`);
     state.recipe = createRecipeObject(data);
 
     state.recipe.bookmarked = state.bookmarks.some(
@@ -56,7 +57,7 @@ export const loadRecipe = async id => {
 export const loadSearchResults = async query => {
   try {
     state.search.query = query;
-    const data = await getJSON(`${API_URL}?search=${query}`);
+    const data = await AJAX(`${API_URL}?search=${query}&key=${KEY}`);
 
     //data.data.recipes  is the array which contains all recipe objects related to searched query
     // lets loop over all recipes and format them  and return this formatted object and store them in our search{} state
@@ -66,6 +67,7 @@ export const loadSearchResults = async query => {
         title: rec.title,
         publisher: rec.publisher,
         image: rec.image_url,
+        ...(rec.key && { key: rec.key }),
       };
     });
     state.search.page = 1;
@@ -136,7 +138,8 @@ export const uploadRecipe = async newRecipe => {
     const ingredients = Object.entries(newRecipe)
       .filter(entry => entry[0].startsWith('ingredient') && entry[1] !== '')
       .map(ing => {
-        const ingArr = ing[1].replaceAll(' ', '').split(',');
+        // const ingArr = ing[1].replaceAll(' ', '').split(',');
+        const ingArr = ing[1].split(',').map(el => el.trim());
         const [quantity, unit, description] = ingArr;
         if (ingArr.length !== 3)
           throw new Error(
@@ -154,7 +157,7 @@ export const uploadRecipe = async newRecipe => {
       publisher: newRecipe.publisher,
       ingredients,
     };
-    const data = await sendJSON(`${API_URL}?key=${KEY}`, recipe);
+    const data = await AJAX(`${API_URL}?key=${KEY}`, recipe);
     state.recipe = createRecipeObject(data);
     addBookMark(state.recipe);
   } catch (error) {

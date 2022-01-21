@@ -10,28 +10,18 @@ const timeOut = seconds => {
   });
 };
 
-//this func will take a url and return its json
-export const getJSON = async url => {
+export const AJAX = async (url, uploadData = undefined) => {
   try {
-    const res = await Promise.race([fetch(url), timeOut(TIMEOUT_SEC)]);
-    const data = await res.json();
-    if (!res.ok) throw new Error(`${data.message} ${res.status}`);
-    return data;
-  } catch (error) {
-    throw error;
-  }
-};
+    const fetchPro = uploadData
+      ? fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(uploadData),
+        })
+      : fetch(url);
 
-//this func will take a url and send JSON
-export const sendJSON = async (url, uploadData) => {
-  try {
-    const fetchPro = fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(uploadData),
-    });
     const res = await Promise.race([fetchPro, timeOut(TIMEOUT_SEC)]);
     const data = await res.json();
     if (!res.ok) throw new Error(`${data.message} ${res.status}`);
@@ -40,3 +30,34 @@ export const sendJSON = async (url, uploadData) => {
     throw error;
   }
 };
+
+//this func will take a url and return its json
+// export const getJSON = async url => {
+//   try {
+//     const res = await Promise.race([fetch(url), timeOut(TIMEOUT_SEC)]);
+//     const data = await res.json();
+//     if (!res.ok) throw new Error(`${data.message} ${res.status}`);
+//     return data;
+//   } catch (error) {
+//     throw error;
+//   }
+// };
+
+// //this func will take a url and send JSON
+// export const sendJSON = async (url, uploadData) => {
+//   try {
+//     const fetchPro = fetch(url, {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify(uploadData),
+//     });
+//     const res = await Promise.race([fetchPro, timeOut(TIMEOUT_SEC)]);
+//     const data = await res.json();
+//     if (!res.ok) throw new Error(`${data.message} ${res.status}`);
+//     return data;
+//   } catch (error) {
+//     throw error;
+//   }
+// };
