@@ -1,5 +1,3 @@
-import icons from 'url:../../img/icons.svg'; //for parcel 2
-import View from './View.js';
 class AddForm {
   _frmEl = document.querySelector('.upload');
   formAdder() {
